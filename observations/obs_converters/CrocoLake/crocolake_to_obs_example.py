@@ -34,7 +34,7 @@ db_filters = [
 obsSeq = ObsSequence(
     "PHY",
     ["ARGO","GLODAP","SprayGliders"],
-    "/vortexfs1/share/boom/users/enrico.milanese/myDatabases/0002_PHY_TRITON-QC-DEV/current/",
+    "/glade/work/emilanese/CrocoLake/0000_PHY_CROCOLAKE-DEV/current/",
     selected_variables,
     db_filters
 )
