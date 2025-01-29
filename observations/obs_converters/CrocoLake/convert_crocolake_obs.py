@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 ##########################################################################
+import os
 from datetime import datetime
 import numpy as np
 import pandas as pd
@@ -140,55 +141,9 @@ class ObsSequence:
 
         ddf = self.ddf
 
-        # Build header of obs_seq file
-        header = [
-            ' obs_sequence',
-            'obs_kind_definitions'
-        ]
-
         # Rename time column
         if "JULD" in ddf.columns:
             ddf = ddf.rename(columns={"JULD": "TIME"})
-
-        # Find unique values in the "DB_NAME" column
-        obs_kind = ddf['DB_NAME'].unique().compute()
-
-        # Build dictionaries for obs_kind sources and measurements
-        obs_kind_sources = {varname: self._get_obs_kind_source(varname) for varname in obs_kind}
-        obs_kind_vars = self._get_obs_kind_vars()
-        obs_kind_vars = {
-            varname: obs_kind_vars[varname]
-            for varname in obs_kind_vars
-            if varname in ddf.columns.to_list()
-        }
-
-        # Append observations kinds
-        obs_kind_nb = (len(obs_kind_sources)+1)*len(obs_kind_vars)
-        header.append(f'          {obs_kind_nb}')
-        idx=10
-        obs_dict = {}
-        for varname in obs_kind_vars.values():
-            idx+=1
-            kind_name = varname
-            obs_dict[kind_name] = idx
-            header.append(f'          {idx:02d} {kind_name}')
-            for source in obs_kind_sources.values():
-                if not source=="":
-                    idx+=1
-                    kind_name = source+"_"+varname
-                    obs_dict[kind_name] = idx
-                    header.append(f'          {idx:02d} {kind_name}')
-
-        # Add number of observations and qc
-        num_copies = 1
-        num_qcs = 1
-        num_obs = len(ddf)
-        header.append(f"num_copies: {num_copies:>7} num_qc: {num_qcs:>15}")
-        header.append(f'num_obs: {num_obs:>10} max_num_obs: {num_obs:>10}')
-        header.append('CROCOLAKE observation')
-        header.append('CROCOLAKE QC')
-        first = 1
-        header.append(f'first: {first:>12} last: {num_obs:>12}')
 
         # Convert lat and lon to radians
         ddf = ddf.rename(columns={"LONGITUDE": "LONGITUDE_DEG", "LATITUDE": "LATITUDE_DEG"})
@@ -208,10 +163,45 @@ class ObsSequence:
         # Repartition for memory-friendly sizes
         ddf = ddf.repartition(partition_size="300MB")
 
-        with open(self.obs_seq_out, 'w', encoding='ascii') as f:
+        obs_tmp_file = self.obs_seq_out + ".tmp"
 
-            for line in header:
-                f.write(str(line) + '\n')
+        # Find unique values in the "DB_NAME" column
+        obs_kind = ddf['DB_NAME'].unique().compute()
+
+        # Build dictionaries for obs_kind sources and measurements
+        obs_kind_sources = {varname: self._get_obs_kind_source(varname) for varname in obs_kind}
+        obs_kind_vars = self._get_obs_kind_vars()
+        obs_kind_vars = {
+            varname: obs_kind_vars[varname]
+            for varname in obs_kind_vars
+            if varname in ddf.columns.to_list()
+        }
+
+        # Start building header
+        header = [
+            ' obs_sequence',
+            'obs_kind_definitions'
+        ]
+
+        # Append observations kinds
+        obs_kind_nb = (len(obs_kind_sources)+1)*len(obs_kind_vars)
+        header.append(f'          {obs_kind_nb}')
+        idx=10
+        obs_dict = {}
+        for varname in obs_kind_vars.values():
+            idx+=1
+            kind_name = varname
+            obs_dict[kind_name] = idx
+            header.append(f'          {idx:02d} {kind_name}')
+            for source in obs_kind_sources.values():
+                if not source=="":
+                    idx+=1
+                    kind_name = source+"_"+varname
+                    obs_dict[kind_name] = idx
+                    header.append(f'          {idx:02d} {kind_name}')
+
+        cumul_obs_count = 0 # initializing value outside with statement
+        with open(obs_tmp_file, 'w', encoding='ascii') as f:
 
             #------------------------------------------------------------------------------#
             def generate_linked_list_pattern(obs_ind,indmax):
@@ -349,7 +339,6 @@ class ObsSequence:
 
             ind0 = 0
             indmax = -1
-            cumul_obs_count = 0
             cols_obs = build_cols_obs(ddf.columns.to_list())
 
             print("Writing the following observations: " + str(cols_obs))
@@ -382,7 +371,43 @@ class ObsSequence:
                 )
                 ind0 += len(df)
                 cumul_obs_count = df["cumul_obs_count"].iloc[-1] + df["obs_count"].iloc[-1]
+                print("cumul_obs_count: " + str(cumul_obs_count) )
+                print("df cumul_obs_count: " + str(df["cumul_obs_count"].iloc[-1]) )
+                print("df obs_count: " + str(df["obs_count"].iloc[-1]) )
             print("Done.")
+
+        # Finish building header (cannot do it earlier because we need to know the number of observations)
+        num_obs = cumul_obs_count
+        print("Total number of observations: " + str(num_obs))
+
+        # Add number of observations and qc
+        num_copies = 1
+        num_qcs = 1
+        header.append(f"num_copies: {num_copies:>7} num_qc: {num_qcs:>15}")
+        header.append(f'num_obs: {num_obs:>10} max_num_obs: {num_obs:>10}')
+        header.append('CROCOLAKE observation')
+        header.append('CROCOLAKE QC')
+        first = 1
+        header.append(f'first: {first:>12} last: {num_obs:>12}')
+
+        # Write obs_seq.out file
+        with open(self.obs_seq_out, 'w', encoding='ascii') as f:
+
+            # Write header
+            for line in header:
+                f.write(str(line) + '\n')
+
+            # Write observations
+            with open(obs_tmp_file, 'r', encoding='ascii') as ftmp:
+                for line in ftmp:
+                    f.write(line)
+
+        # Remove temporary file
+        os.remove(obs_tmp_file)
+
+        print("Observations written to " + self.obs_seq_out)
+
+        return
 
 
 ##########################################################################
