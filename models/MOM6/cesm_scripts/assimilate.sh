@@ -8,10 +8,9 @@ set -ex
 
 caseroot=$1
 
-dart_build_dir=/glade/derecho/scratch/hkershaw/MOM6/DART/models/MOM6/work
+dart_build_dir=/glade/work/emilanese/CROCODILE-DART/models/MOM6/work
 comp_name=OCN
 obs_dir=/glade/p/cisl/dares/Observations/WOD13
-ntasks=1152  # should pull this from CIME
 
 echo "DART dart_build_dir" $dart_build_dir
 
@@ -123,14 +122,15 @@ cp $dart_build_dir/input.nml $rundir/input.nml
 
 #-------------------------------
 # set template files for filter
-# restart, static filenames depend on the case
-# ocean_geometry.nc is always called ocean_geometry.nc
+# restart, static, ocean_geometry filenames depend on the case
 #-------------------------------
 setup_template_files() {
 
 ln -sf $(head -1 filter_input_list.txt) mom6.r.nc
 
 ln -sf $(ls $case.mom6.h.static* | head -1) mom6.static.nc
+
+ln -sf $(ls $case.mom6.h.ocean_geometry* | head -1) ocean_geometry.nc
 }
 
 #-------------------------------
@@ -150,7 +150,7 @@ run_filter() {
 
 echo "running filter"
 if [ "$assimilate" = TRUE ]; then
-   mpirun -n $ntasks "$exeroot"/filter
+   mpibind "$exeroot"/filter
 fi
 
 }
