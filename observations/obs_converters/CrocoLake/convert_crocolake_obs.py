@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 import numpy as np
 import pandas as pd
-from argo2parquet import Loader
+from crocolakeloader.loader import Loader as CLLoader
 ##########################################################################
 
 
@@ -56,14 +56,14 @@ class ObsSequence:
          fill_na_error (float): replace value for NA in error variables
         """
 
-        loader = Loader.Loader(
+        loader = CLLoader(
             selected_variables=self.selected_vars,
             db_type=self.db_type,
             db_list=self.db_list,
             db_rootpath=self.db_rootpath
         )
 
-        loader.add_filters(self.db_filters)
+        loader.set_filters(self.db_filters)
 
         ddf = loader.get_dataframe()
 
@@ -239,7 +239,7 @@ class ObsSequence:
                 """
                 # df technically is just a row
                 obs = []
-                # for var in params["TRITON_BGC"]:
+                # for var in params["CROCOLAKE_BGC"]:
                 ref_count_obs = df["obs_count"] # nb of obs to include for this row
                 obs_num_row = 0
                 for var in cols_obs:
@@ -445,7 +445,7 @@ if __name__ == '__main__':
     obsSeq = ObsSequence(
         "PHY",
         ["ARGO","GLODAP","SprayGliders"],
-        "/vortexfs1/share/boom/users/enrico.milanese/myDatabases/0002_PHY_TRITON-QC-DEV/current/",
+        "/path/to/crocolake/"
         selected_variables,
         db_filters
     )

@@ -34,7 +34,7 @@ db_filters = [
 obsSeq = ObsSequence(
     "PHY",
     ["ARGO","GLODAP","SprayGliders"],
-    "/glade/work/emilanese/CrocoLake/0000_PHY_CROCOLAKE-DEV/current/",
+    "/path/to/crocolake/",
     selected_variables,
     db_filters
 )
