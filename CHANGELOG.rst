@@ -22,6 +22,67 @@ individual files.
 
 The changes are now listed with the most recent at the top.
 
+**May 6 2025 :: Fwd-op for SAT_SEAICE radar and laser. Tag v11.11.0**
+
+- Forward Operator for SAT_SEAICE_RADAR|LASER_FREEBOARD. 
+
+  *contributed by Molly Wieringa*
+
+Bug-fix:
+
+  - real128 removed from developer_tests for nvhpc compiler.
+
+Documentation updates:
+
+  - CONAGUA converter documentation updated.
+  - Radar observations documentation updated. 
+
+**May 1 2025 :: Bug-fixes: TIEGCM, BNRH. Tag v11.10.9**
+
+- Fix VTEC extrapolation calculation in TIEGCM model_mod.
+- Fix loop limit in bnrh_distribution_mod, and routine name in error messages.
+- Documentation fix for perturb_single_instance.
+
+**April 22 2025 :: Bug-fix: CICE interpolation. Tag v11.10.8**
+
+- Inverse distance weighting interpolation for CICE. Replaces
+  bilinear interpolation which can produce out-of-bounds values. 
+
+**March 31 2025 :: Bug-fix: CAM perturb. Tag v11.10.7**
+
+- Fix fields to perturb in cam-se and cam-fv.
+- Fix documentation links for obs_selection.
+
+**March 19 2025 :: Calendar base date documentation. Tag v11.10.6**
+
+- Added base date information to time_manager_mod docs.
+- GitHub workflow based on tj-actions changed-files removed.
+
+**March 14 2025 :: WRF use_theta_m check. Tag v11.10.5**
+
+- Assert USE_THETA_M=0 in WRF when initializing wrf model_mod.
+- fixed documentation broken links.
+
+**February 6 2025 :: WRF tutorial and prepbufr documentation. Tag v11.10.4**
+
+- Observation section of WRF tutorial updated to match provided obs.   
+- Prepbufr docs updated to describe complete conversion process.
+
+**February 4 2025 :: Generic model_mod subroutine parse_variables. Tag v11.10.3**
+
+- Creates two generalized subroutines that convert the table of state variables that is
+  read in from the &model_nml to a state_var_type: parse_variables and parse_variables_clamp
+- Alternate versions for this subroutine were replaced with parse_variables in the
+  models MOM6, wrf_hydro, aether_lat-lon, cam-fv, cam-se, POP, and cice
+- New dev test test_parse_variables added
+
+**February 3 2025 :: Inflation documentation. Tag v11.10.2**
+
+- Improved inflation documentation
+- CAM FV and SE checks for required state variables 
+- GitHub action to alert on files with legacy svn info
+- Fwd op documentation formatting fix
+
 **January 30 2025 :: Bug-fix: Explicitly handle BNRHF transform failures. Tag v11.10.1**
 
 - Probit transform failure is caught and an error code is returned 
