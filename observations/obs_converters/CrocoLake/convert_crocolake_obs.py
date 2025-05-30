@@ -88,23 +88,23 @@ class ObsSequence:
         return
 
 #------------------------------------------------------------------------------#
-    def _get_obs_kind_vars(self):
-        """Build dictioary of available variable names for obs_kind"""
+    def _get_obs_type_vars(self):
+        """Build dictioary of available variable names for obs_type"""
 
-        obs_kind_vars = {}
-        obs_kind_vars["TEMP"] = "TEMPERATURE"
-        obs_kind_vars["PSAL"] = "SALINITY"
-        obs_kind_vars["DOXY"] = "OXYGEN"
-        obs_kind_vars["TOT_ALKALINITY"] = "ALKALINITY"
-        obs_kind_vars["TCO2"] = "INORGANIC_CARBON"
-        obs_kind_vars["NITRATE"] = "NITRATE"
-        obs_kind_vars["SILICATE"] = "SILICATE"
-        obs_kind_vars["PHOSPHATE"] = "PHOSPHATE"
-        return obs_kind_vars
+        obs_type_vars = {}
+        obs_type_vars["TEMP"] = "TEMPERATURE"
+        obs_type_vars["PSAL"] = "SALINITY"
+        obs_type_vars["DOXY"] = "OXYGEN"
+        obs_type_vars["TOT_ALKALINITY"] = "ALKALINITY"
+        obs_type_vars["TCO2"] = "INORGANIC_CARBON"
+        obs_type_vars["NITRATE"] = "NITRATE"
+        obs_type_vars["SILICATE"] = "SILICATE"
+        obs_type_vars["PHOSPHATE"] = "PHOSPHATE"
+        return obs_type_vars
 
 #------------------------------------------------------------------------------#
-    def _get_obs_kind_source(self,varname):
-        """Build dictionary of available source names for obs_kind"""
+    def _get_obs_type_source(self,varname):
+        """Build dictionary of available source names for obs_type"""
         if varname=="ARGO":
             return varname
         elif varname=="GLODAP":
@@ -166,34 +166,34 @@ class ObsSequence:
         obs_tmp_file = self.obs_seq_out + ".tmp"
 
         # Find unique values in the "DB_NAME" column
-        obs_kind = ddf['DB_NAME'].unique().compute()
+        obs_type = ddf['DB_NAME'].unique().compute()
 
-        # Build dictionaries for obs_kind sources and measurements
-        obs_kind_sources = {varname: self._get_obs_kind_source(varname) for varname in obs_kind}
-        obs_kind_vars = self._get_obs_kind_vars()
-        obs_kind_vars = {
-            varname: obs_kind_vars[varname]
-            for varname in obs_kind_vars
+        # Build dictionaries for obs_type sources and measurements
+        obs_type_sources = {varname: self._get_obs_type_source(varname) for varname in obs_type}
+        obs_type_vars = self._get_obs_type_vars()
+        obs_type_vars = {
+            varname: obs_type_vars[varname]
+            for varname in obs_type_vars
             if varname in ddf.columns.to_list()
         }
 
         # Start building header
         header = [
             ' obs_sequence',
-            'obs_kind_definitions'
+            'obs_type_definitions'
         ]
 
         # Append observations kinds
-        obs_kind_nb = (len(obs_kind_sources)+1)*len(obs_kind_vars)
-        header.append(f'          {obs_kind_nb}')
+        obs_type_nb = (len(obs_type_sources)+1)*len(obs_type_vars)
+        header.append(f'          {obs_type_nb}')
         idx=10
         obs_dict = {}
-        for varname in obs_kind_vars.values():
+        for varname in obs_type_vars.values():
             idx+=1
             kind_name = varname
             obs_dict[kind_name] = idx
             header.append(f'          {idx:02d} {kind_name}')
-            for source in obs_kind_sources.values():
+            for source in obs_type_sources.values():
                 if not source=="":
                     idx+=1
                     kind_name = source+"_"+varname
@@ -272,12 +272,12 @@ class ObsSequence:
                         )
 
                         obs.append('kind') # this is type of observation
-                        obs_kind_name = obs_kind_vars[var]
-                        obs_src = obs_kind_sources[ df["DB_NAME"] ]
+                        obs_type_name = obs_type_vars[var]
+                        obs_src = obs_type_sources[ df["DB_NAME"] ]
                         if not obs_src == "":
-                            obs_kind_name = obs_src  + "_" + obs_kind_name
-                        obs_kind = obs_dict[obs_kind_name]
-                        obs.append(obs_kind)  # observation type
+                            obs_type_name = obs_src  + "_" + obs_type_name
+                        obs_type = obs_dict[obs_type_name]
+                        obs.append(obs_type)  # observation type
 
                         days, seconds = self._timestamp_to_days_seconds(
                             df["TIME"].strftime('%Y-%m-%d %H:%M:%S')
