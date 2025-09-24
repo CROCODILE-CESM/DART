@@ -21,7 +21,7 @@ To install required packages (except for standard library modules):
 
 .. code-block:: bash
 
-   pip install dask[dataframe] gsw numpy pandas
+   pip install "dask[dataframe]" gsw numpy pandas
 
 
 Paths and examples
