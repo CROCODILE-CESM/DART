@@ -27,4 +27,4 @@ To install required packages (except for standard library modules):
 Paths and examples
 ------------------
 
-Two working examples showing how to select data from CrocoLake and store it in obs_seq.in format are provided. To use them, remember to replace 'crocolake_path' with your own path to CrocoLake.
+Two working examples showing how to select data from CrocoLake and store it in obs_seq.out format are provided. To use them, remember to replace 'crocolake_path' with your own path to CrocoLake.
