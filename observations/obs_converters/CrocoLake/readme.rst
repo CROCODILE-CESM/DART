@@ -17,14 +17,28 @@ Required Python packages
 - numpy
 - pandas
 
-To install required packages (except for standard library modules):
+To install the required packages (except for standard library modules):
 
-.. code-block:: bash
+.. code-block:: text
 
    pip install "dask[dataframe]" gsw numpy pandas
 
 
-Paths and examples
+Example scripts
 ------------------
 
-Two working examples showing how to select data from CrocoLake and store it in obs_seq.out format are provided. To use them, remember to replace 'crocolake_path' with your own path to CrocoLake.
+Two example Python scripts are provided to demonstrate how to select data from CrocoLake and 
+convert it into DART observation sequence format.
+
+.. Note:: 
+
+   The example scripts assume that you have downloaded CrocoLake.
+   The 'crocolake_path' in the scripts should be replaced with your own path to CrocoLake.
+
+
+Run the example scripts from the command line:
+
+.. code-block:: bash
+
+   python3 crocolake_to_obsseq_example1.py
+   python3 crocolake_to_obsseq_example2.py
