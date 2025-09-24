@@ -6,9 +6,19 @@ observations developed and maintained in the framework of the NSF-sponsored proj
 `CROCODILE <https://github.com/CROCODILE-CESM>`__ (CESM Regional Ocean and Carbon 
 cOnfigurator with Data assimilation and Embedding).
 
-More details about CrocoLake can be found on the Woods Hole Oceanographic Institution 
-Biogeochemical Ocean Observing and Modeling Lab (`boom-lab <https://github.com/boom-lab>`__)
-with examples provided in `crocolake-python <https://github.com/boom-lab/crocolake-python>`__.
+More details about CrocoLake can be found at the Woods Hole Oceanographic Institution
+Biogeochemical Ocean Observing and Modeling Lab (`boom-lab <https://github.com/boom-lab>`__): `crocolake-python <https://github.com/boom-lab/crocolake-python>`__.
 
-The converter requires the `crocolakeloader <https://github.com/boom-lab/crocolakeloader>`__ 
-python package to be installed and the location of the CrocoLake database to be specified.
+Required Python packages
+------------------------
+
+- dask[dataframe]
+- gsw
+- numpy
+- pandas
+
+To install required packages (except for standard library modules):
+
+.. code-block:: bash
+
+   pip install dask[dataframe] gsw numpy pandas
