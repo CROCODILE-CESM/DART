@@ -207,7 +207,7 @@ type quad_irreg_grid_coords
    ! the sizes of these depend on the grid size.  these are good defaults for ?
    integer  :: num_reg_x = 180
    integer  :: num_reg_y = 180
-   integer  :: max_reg_list_num = 800
+   integer  :: max_reg_list_num = 1600
    real(r8) :: min_lon =     0.0_r8
    real(r8) :: max_lon =   360.0_r8
    real(r8) :: lon_width = 360.0_r8
@@ -412,9 +412,9 @@ select case (grid_type)
 
       ! adjust num_regs here based on numlons, numlats
       if (num_lats * num_lons > 6 * 1000 * 1000) then  ! ~1/10th degree
-         interp_handle%ii%num_reg_x = 900
-         interp_handle%ii%num_reg_y = 900
-         interp_handle%ii%max_reg_list_num = 800   !todo  what is good val?
+         interp_handle%ii%num_reg_x = 1800
+         interp_handle%ii%num_reg_y = 1800
+         interp_handle%ii%max_reg_list_num = 1600   !todo  what is good val?
          if(debug > 10) then
             write(string1, *) 'case 1: ', interp_handle%ii%num_reg_x, interp_handle%ii%num_reg_y, &
                                interp_handle%ii%max_reg_list_num
@@ -422,9 +422,9 @@ select case (grid_type)
          endif
 
       else if (num_lats * num_lons > 250 * 1000) then  ! ~1/2th degree
-         interp_handle%ii%num_reg_x = 180
-         interp_handle%ii%num_reg_y = 180
-         interp_handle%ii%max_reg_list_num = 800
+         interp_handle%ii%num_reg_x = 360
+         interp_handle%ii%num_reg_y = 360
+         interp_handle%ii%max_reg_list_num = 1600
          if(debug > 10) then
             write(string1, *) 'case 2: ', interp_handle%ii%num_reg_x, interp_handle%ii%num_reg_y, &
                                interp_handle%ii%max_reg_list_num
@@ -432,9 +432,9 @@ select case (grid_type)
          endif
 
       else
-         interp_handle%ii%num_reg_x = 90
-         interp_handle%ii%num_reg_y = 90
-         interp_handle%ii%max_reg_list_num = 800
+         interp_handle%ii%num_reg_x = 180
+         interp_handle%ii%num_reg_y = 180
+         interp_handle%ii%max_reg_list_num = 1600
          if(debug > 10) then
             write(string1, *) 'case 3: ', interp_handle%ii%num_reg_x, interp_handle%ii%num_reg_y, &
                                interp_handle%ii%max_reg_list_num
